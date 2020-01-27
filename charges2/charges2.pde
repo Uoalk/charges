@@ -112,10 +112,10 @@ public class Rod implements Charged{
     this.charge=charge;
     this.mot=new Mot(pos);
     rotMot=new RotMot();
-   l=10;
+   l=0.1;
     mass=10;
     I=1.0/12*mass*l*l;
-    pointCount=50;
+    pointCount=10;
   }
   public void setMot(Mot m){this.mot=m;}
   public Mot getMot(){return mot;}
@@ -187,10 +187,12 @@ public class System{
   public float t;
   public System(){
     //charges=new Charged[]{ new Point(0.001,new PVector(0,0,0)),new Point(-0.001, new PVector(10,1,1))};
-    charges=new Charged[]{new Rod(.01,new PVector(0,0,0)),new Point(0.10,new PVector(0,10,0))};
+    charges=new Charged[]{new Rod(0.001,new PVector(0,0,0)),new Point(0.001,new PVector(0,10,0))};
     //charges[2].setMot(new Mot(new PVector(0,3,0),new PVector(54,0,0)));
     //((Point)charges[1]).mass=1000;
-    
+    ((Rod)charges[0]).rotMot.theta=3.14/2;
+    ((Rod)charges[0]).rotMot.phi=3.14/2;
+    ((Rod)charges[0]).l=20;
   }
   public void draw(){
     for(Charged i: charges)i.draw();
@@ -223,6 +225,8 @@ public void setup(){
   size(1000,1000,P3D);
 
   frameRate(60);
+  
+  println(((Rod)(s.charges[0])).fMot(s.charges[0].getMot(),s));
  
 }
 public void drawAxis(){
@@ -250,11 +254,19 @@ public void draw(){
   //((Rod)(s.charges[0])).rotMot.theta+=0.01;
   //((Rod)(s.charges[0])).rotMot.phi+=0.02;
   
+  
   for(Point i: ((Rod)(s.charges[0])).getPoints())i.draw();
   //((Rod)(s.charges[0])).pointCount++;
   //println(s.getField(new PVector(1,1,1),null).magSq());
   camera(mouseX-width/2, -mouseY+height/2, 120.0, 0, 0, 0.0, 
        0.0, 1.0, 0.0);
   
+  stroke(0);
+  for(float x=0; x<100;x+=10)
+  for(float y=0; y<100;y+=10)
+  for(float z=0; z<100;z+=10){
+    PVector field=PVector.div(s.getField(new PVector(x,y,z),null),1000);
+    line(x,y,z,x+field.x,y+field.y,z+field.z);
+  }
  
 }

@@ -121,8 +121,14 @@ public class Point implements Charged{
     return PVector.mult(r.normalize(),k*charge/d2);
   }
 }
-
-
+public PVector proj(PVector u, PVector v){
+  //projection of u onto v
+  return PVector.mult(v,u.dot(v)/v.magSq());
+  
+}
+public float sgn(float n){
+   return abs(n)/n; 
+}
 public class Rod implements Charged{
   float charge, mass, l;
   int pointCount;
@@ -173,12 +179,19 @@ public class Rod implements Charged{
     newRotMot.theta=m.thetaDot;
     newRotMot.phi=m.phiDot;
     
-    torque=PVector.mult(torque,1.0/I());
+    PVector alpha=PVector.mult(torque,1.0/I());
     
-    float r=torque.mag();
-    newRotMot.thetaDot=r*acos(torque.z/r);
-   
-    newRotMot.phiDot=r*atan2(torque.y,torque.x);
+    //float r=alpha.mag();
+    //newRotMot.thetaDot=acos(alpha.z/r);
+    //newRotMot.phiDot=atan2(alpha.y,alpha.x);
+    
+    PVector phiHat=new PVector(sin(rotMot.theta),cos(rotMot.theta),0);
+    PVector zAxis=new PVector(0,0,0);
+    newRotMot.thetaDot=proj(alpha,zAxis).z;
+    PVector phiHatComponent=proj(alpha,phiHat);
+    newRotMot.phiDot=-phiHatComponent.mag()*sgn(phiHatComponent.dot(alpha));
+    
+    
     if(Float.isNaN(newRotMot.phiDot))newRotMot.phiDot=0;
     if(Float.isNaN(newRotMot.thetaDot))newRotMot.thetaDot=0;
     
@@ -200,9 +213,8 @@ public class Rod implements Charged{
     
   }
   public void updateMot(){
-    mot=newMot;
+    //mot=newMot;
     rotMot=newRotMot;
-    println(rotMot.theta);
   }
   public PVector getField(PVector loc){
     PVector field=new PVector();
@@ -247,11 +259,11 @@ public class System{
   public float t;
   public System(){
 
-    charges=new Charged[]{new Rod(0.001,new PVector(0,0,0)),new Point(0.001,new PVector(0.1,00,12))};
+    charges=new Charged[]{new Rod(0.0001,new PVector(0,0,0)),new Point(0.0001,new PVector(6,0,12))};
     //charges=new Charged[]{new Point(0.001,new PVector(0,0,0)),new Point(0.001,new PVector(5,0,0))};
 
     ((Rod)charges[0]).l=30;
-    ((Rod)charges[0]).mass=30;
+    ((Rod)charges[0]).mass=0.01;
     ((Rod)charges[0]).pointCount=100;
   }
   public void draw(){

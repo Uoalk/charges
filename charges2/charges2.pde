@@ -123,7 +123,9 @@ public class Point implements Charged{
 }
 public PVector proj(PVector u, PVector v){
   //projection of u onto v
-  return PVector.mult(v,u.dot(v)/v.magSq());
+  float magSq=v.magSq();
+  if(magSq==0)magSq=0.00001;
+  return PVector.mult(v,u.dot(v)/magSq);
   
 }
 public float sgn(float n){
@@ -190,16 +192,22 @@ public class Rod implements Charged{
     newRotMot.thetaDot=proj(alpha,zAxis).z;
     PVector phiHatComponent=proj(alpha,phiHat);
     newRotMot.phiDot=phiHatComponent.mag()*sgn(phiHatComponent.dot(phiHat));
-    println(phiHatComponent);
+    //println(phiHatComponent);
     
     
     if(Float.isNaN(newRotMot.phiDot))newRotMot.phiDot=0;
     if(Float.isNaN(newRotMot.thetaDot))newRotMot.thetaDot=0;
     
+    stroke(255,0,0);
+    strokeWeight(10);
+    line(0,0,0,phiHat.x*10,phiHat.y*10,phiHat.z*10);
+    line(0,0,0,0,0,10);
+    stroke(0,255,0);
     line(0,0,0,alpha.x,alpha.y,alpha.z);
     
-    println(alpha);
-    println(newRotMot.thetaDot+" "+newRotMot.phiDot);
+    println(proj(alpha,zAxis));
+    //println(alpha);
+    //println(newRotMot.thetaDot+" "+newRotMot.phiDot);
     return newRotMot;
     
   }
@@ -227,7 +235,7 @@ public class Rod implements Charged{
   }
   public void draw(){
 
-    
+    strokeWeight(0);
     pushMatrix();
     translate(mot.x.x,mot.x.y,mot.x.z);
     rotateZ(rotMot.theta);
@@ -261,13 +269,12 @@ public class System{
   public float t;
   public System(){
 
-    charges=new Charged[]{new Rod(0.0001,new PVector(0,0,0)),new Point(0.0001,new PVector(3,0,12))};
+    charges=new Charged[]{new Rod(0.0001,new PVector(0,0,0)),new Point(0.0001,new PVector(3,3,12))};
     //charges=new Charged[]{new Point(0.001,new PVector(0,0,0)),new Point(0.001,new PVector(5,0,0))};
 
     ((Rod)charges[0]).l=30;
     ((Rod)charges[0]).mass=0.01;
     ((Rod)charges[0]).pointCount=100;
-    ((Rod)charges[0]).rotMot.theta=100;
   }
   public void draw(){
     for(Charged i: charges)i.draw();

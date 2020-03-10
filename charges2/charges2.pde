@@ -28,6 +28,17 @@ public float sgn(float n){
    return abs(n)/n; 
 }
 
+public PVector rotate(PVector pos, PVector rot){
+   float u=rot.x;
+    float v=rot.y;
+    float w=rot.z;
+      
+  return new PVector(pos.x*cos(v)        -pos.y*cos(w)*sin(v)                          +pos.z*sin(v)*sin(w),
+                    pos.x*cos(u)*sin(v)  +pos.y*(cos(u)*cos(v)*cos(w)-sin(u)*sin(w))   -pos.z*(cos(w)*sin(u)+cos(u)*cos(v)*sin(w)),
+                    pos.x*sin(u)*sin(v)  +pos.y*(cos(u)*sin(w)+cos(v)*cos(w)*sin(u))   +pos.z*(cos(u)*cos(w)-cos(v)*sin(u)*sin(w)));
+}
+
+
 
 public class System{
   Charged[] charges;
@@ -41,6 +52,7 @@ public class System{
     ((Rod)charges[0]).l=30;
     ((Rod)charges[0]).mass=0.01;
     ((Rod)charges[0]).pointCount=10;
+    ((Rod)charges[0]).mot.x=new PVector(1,1,1);
   }
   public void draw(){
     for(Charged i: charges)i.draw();
@@ -95,7 +107,7 @@ public void draw(){
   s.run();
   Rod rod=(Rod)(s.charges[0]);
   rod.rotMot.rot.x+=0.01;
-  rod.rotMot.rot.y=0.3;
+  //rod.rotMot.rot.y=0.3;
   //rod.rotMot.rot.z+=0.04;
   for(int i=0;i<rod.getPoints().length;i++){
     rod.getPoints()[i].draw();

@@ -39,7 +39,7 @@ public class Rod implements Charged{
     newMot.xDot.div(mass);
     return newMot;
   }
-  /**public RotMot fRotMot(RotMot m, System s){
+  public RotMot fRotMot(RotMot m, System s){
     RotMot newRotMot=new RotMot();
     PVector torque=new PVector();
     
@@ -53,15 +53,16 @@ public class Rod implements Charged{
     
     PVector alpha=PVector.mult(torque,1.0/I());
     
-    //float r=alpha.mag();
-    //newRotMot.thetaDot=acos(alpha.z/r);
-    //newRotMot.phiDot=atan2(alpha.y,alpha.x);
     
-    PVector phiHat=new PVector(sin(rotMot.theta),cos(rotMot.theta),0);
-    PVector zAxis=new PVector(0,0,0);
-    newRotMot.thetaDot=proj(alpha,zAxis).z;
-    PVector phiHatComponent=proj(alpha,phiHat);
-    newRotMot.phiDot=phiHatComponent.mag()*sgn(phiHatComponent.dot(phiHat));
+    
+    
+    
+    PVector uHat=new PVector(1,0,0);
+    PVector vHat=new PVector(0,0,1);
+    PVector wHat=new PVector(1,0,0);
+    newRotMot.rotDot.x=proj(alpha,uHat).x;
+    newRotMot.rotDot.y=proj(alpha,vHat).z;
+    newRotMot.rotDot.z=proj(alpha,wHat).x;
     //println(phiHatComponent);
     
     
@@ -108,13 +109,17 @@ public class Rod implements Charged{
     strokeWeight(0);
     pushMatrix();
     translate(mot.x.x,mot.x.y,mot.x.z);
-    println(this.rotMot);
-    rotateZ(rotMot.rot.z);
-    rotateY(rotMot.rot.y);
     
-    rotateX(rotMot.rot.x);
-   
-    box(1,1,l);
+    
+    
+    float u=rotMot.rot.x;
+    float v=rotMot.rot.y;
+    float w=rotMot.rot.z;
+    PVector end=rotate(new PVector(0,0,l/2),new PVector(u,v,w));
+    
+    strokeWeight(10);
+    fill(0);
+    line(-end.x,-end.y,-end.z, end.x,end.y,end.z);
     popMatrix();
     
   }
@@ -129,14 +134,10 @@ public class Rod implements Charged{
       points[i]=new Point(charge/pointCount, new PVector());
       PVector pos=new PVector(0,0,(pointCount/2.0-i-0.5)/pointCount*l);
       
-      float u=rotMot.rot.x;
-      float v=rotMot.rot.y;
-      float w=rotMot.rot.z;
+      PVector rot=new PVector(rotMot.rot.x,rotMot.rot.y,rotMot.rot.z);
       
-      PVector newPos=new PVector(pos.z*c(v)*c(w)                    +pos.y*c(v)*s(w)                   -pos.x*s(v),
-                                  pos.z*(s(u)*s(v)*c(w)-c(u)*s(w))  +pos.y*(c(u)*c(w)+s(u)*s(v)*s(w))  +pos.x*(s(u)*c(v))
-                                  ,pos.z*(s(u)*s(w)+c(u)*s(v)*c(w)) +pos.y*(c(u)*s(v)*s(w)-s(u)*c(w))  +pos.x*(c(u)*c(v)));
-
+      
+      PVector newPos=rotate(pos, rot);
       
       
       points[i]=new Point(charge/pointCount, PVector.add(mot.x,newPos));

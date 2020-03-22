@@ -48,40 +48,39 @@ public class Rod implements Charged{
       PVector f=PVector.mult(s.getField(p.mot.x, this),p.charge);
       torque.add(r.cross(f));
     }
-    newRotMot.theta=m.thetaDot;
-    newRotMot.phi=m.phiDot;
+
     
     PVector alpha=PVector.mult(torque,1.0/I());
     
+    line(mot.x.x,mot.x.y,mot.x.z,mot.x.x+alpha.x,mot.x.y+alpha.y,mot.x.z+alpha.z);
     
     
     
     
-    PVector uHat=new PVector(1,0,0);
-    PVector vHat=new PVector(0,0,1);
-    PVector wHat=new PVector(1,0,0);
-    newRotMot.rotDot.x=proj(alpha,uHat).x;
-    newRotMot.rotDot.y=proj(alpha,vHat).z;
-    newRotMot.rotDot.z=proj(alpha,wHat).x;
+    RotMot testRotMot=new RotMot();
+    //X to xy plane
+    //angle between (x,y,z) -> (x,0,0) -> (x,y,0)
+    PVector v1=new PVector(0,alpha.y,alpha.z);
+    PVector v2=new PVector(0,alpha.y,0);
+    float theta=PVector.dot(v1,v2)/v1.mag()/v2.mag();
+    println(theta+"-");
+    alpha=rotate(PVector.mult(alpha,-1),new PVector(1,0,0));
+    println(alpha);
+    
+    //float theta2=PI/2-atan2(y,x);
+    
+    
+    
     //println(phiHatComponent);
     
     
-    if(Float.isNaN(newRotMot.phiDot))newRotMot.phiDot=0;
-    if(Float.isNaN(newRotMot.thetaDot))newRotMot.thetaDot=0;
+
     
-    stroke(255,0,0);
-    strokeWeight(10);
-    line(0,0,0,phiHat.x*10,phiHat.y*10,phiHat.z*10);
-    line(0,0,0,0,0,10);
-    stroke(0,255,0);
-    line(0,0,0,alpha.x,alpha.y,alpha.z);
-    
-    println(proj(alpha,zAxis));
     //println(alpha);
     //println(newRotMot.thetaDot+" "+newRotMot.phiDot);
     return newRotMot;
     
-  }**/
+  }
   public void run(System s, float dt){
     Mot k1=mult(fMot(mot,s),dt);
     Mot k2=mult(fMot(add(mot, mult(k1,0.5)),s), dt);
@@ -90,7 +89,7 @@ public class Rod implements Charged{
     newMot=add(mot, mult(add(add(add(k1, mult(k2,2)), mult(k3, 2)), k4), 1.0/6));
     
 
-    //newRotMot=add(rotMot,mult(fRotMot(rotMot,s),dt));
+    newRotMot=add(rotMot,mult(fRotMot(rotMot,s),dt));
     
   }
   public void updateMot(){

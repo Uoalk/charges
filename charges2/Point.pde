@@ -42,7 +42,7 @@ public class Point implements Charged{
     newMot=add(mot, mult(add(add(add(k1, mult(k2,2)), mult(k3, 2)), k4), 1.0/6));
   }
   public void updateMot(){
-    mot=newMot;
+    //mot=newMot;
   }
   public void setMot(Mot m){
     this.mot=m;

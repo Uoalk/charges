@@ -46,7 +46,7 @@ public class System{
   public float t;
   public System(){
 
-    charges=new Charged[]{new Rod(0.0001,new PVector(0,0,0)),new Point(1,new PVector(1,1,1))};
+    charges=new Charged[]{new Rod(0.0001,new PVector(0,0,0)),new Point(1,new PVector(0,10,0))};
     //charges=new Charged[]{new Point(0.001,new PVector(0,0,0)),new Point(0.001,new PVector(5,0,0))};
 
     ((Rod)charges[0]).l=30;
@@ -106,9 +106,9 @@ public void draw(){
   drawAxis();
   s.run();
   Rod rod=(Rod)(s.charges[0]);
-  rod.rotMot.rot.x+=0.01;
+  //rod.rotMot.rot.x+=0.01;
   //rod.rotMot.rot.y=0.3;
-  //rod.rotMot.rot.z+=0.04;
+  rod.rotMot.rot.z+=0.04;
   for(int i=0;i<rod.getPoints().length;i++){
     rod.getPoints()[i].draw();
   }
